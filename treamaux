@@ -27,4 +27,22 @@ void loop() {
 	delayMicroseconds(2);  
 	digitalWrite(leftsonicip, HIGH);  
 	delayMicroseconds(10);  
-	digitalWrite(trigPin, LOW);  
+	digitalWrite(leftsonicip, LOW);  
+  durationleft = pulseIn(leftsonicop, HIGH);  
+  distanceleft = (durationleft*.0343)/2; 		
+  digitalWrite(rightsonicip, LOW);  
+	delayMicroseconds(2);  
+	digitalWrite(rightsonicip, HIGH);  
+	delayMicroseconds(10);  
+	digitalWrite(rightsonicip, LOW);  
+  durationright = pulseIn(rightsonicop, HIGH);  
+  distanceright = (durationright*.0343)/2;
+  digitalWrite(midsonicip, LOW);  
+	delayMicroseconds(2);  
+	digitalWrite(midsonicip, HIGH);  
+	delayMicroseconds(10);  
+	digitalWrite(midsonicip, LOW);  
+  durationmid = pulseIn(midsonicop, HIGH);  
+  distancemid = (durationmid*.0343)/2; 	
+  
+  

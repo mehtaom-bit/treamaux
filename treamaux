@@ -1,4 +1,30 @@
-void setup()
-{
+#define leftsonicip
+#define midsonicip
+#define rightsonicip
+#define leftsonicop
+#define midsonicop
+#define rightsonicop
+#define motorrightfor
+#define motorrightback
+#define motorleftfor
+#define motorleftback
+
+float durationright, durationleft, durationmid, distanceright, distanceleft, distancemid;
+
+void setup() {
+  pinmode(leftsonicip, INPUT);
+  pinmode(midsonicip, INPUT);
+  pinmode(rightsonicip, INPUT);
+  pinmode(leftsonicop, OUTPUT);
+  pinmode(midsonicop, OUTPUT);
+  pinmode(rightsonicop, OUTPUT);
+  pinmode(motorrightfor, OUTPUT) 
+
 }
 
+void loop() {
+  digitalWrite(leftsonicip, LOW);  
+	delayMicroseconds(2);  
+	digitalWrite(leftsonicip, HIGH);  
+	delayMicroseconds(10);  
+	digitalWrite(trigPin, LOW);  

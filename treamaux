@@ -14,50 +14,53 @@
 #define WEST  3
 
 int x = 0, y = 0;   // Robot position
-int marks[MAZE_SIZE][MAZE_SIZE] = {0};  // Grid for visited cells
+int marks[20][20] = {0};  // Grid for visited cells
 
 int direction = NORTH;
 
 float durationright, durationleft, durationmid, distanceright, distanceleft, distancemid;
 
 void setup() {
-  pinmode(leftsonicip, INPUT);
-  pinmode(midsonicip, INPUT);
-  pinmode(rightsonicip, INPUT);
-  pinmode(leftsonicop, OUTPUT);
-  pinmode(midsonicop, OUTPUT);
-  pinmode(rightsonicop, OUTPUT);
-  pinmode(motorrightfor, OUTPUT) 
+  pinMode(leftsonicip, INPUT);
+  pinMode(midsonicip, INPUT);
+  pinMode(rightsonicip, INPUT);
+  pinMode(leftsonicop, OUTPUT);
+  pinMode(midsonicop, OUTPUT);
+  pinMode(rightsonicop, OUTPUT);
+  pinMode(motorrightfor, OUTPUT);
+  pinMode(motorrightback, OUTPUT);
+  pinMode(motorleftfor, OUTPUT);
+  pinMode(motorleftback, OUTPUT);
 
 }
 
 float getdistanceleft(){
-  	digitalWrite(leftsonicip, LOW);  
+  	digitalWrite(leftsonicop, LOW);  
 	delayMicroseconds(2);  
-	digitalWrite(leftsonicip, HIGH);  
+	digitalWrite(leftsonicop, HIGH);  
 	delayMicroseconds(10);  
-	digitalWrite(leftsonicip, LOW);  
-  durationleft = pulseIn(leftsonicop, HIGH);  
+	digitalWrite(leftsonicop, LOW);  
+  durationleft = pulseIn(leftsonicip, HIGH);  
   return (durationleft*.0343)/2;
 }
 
 float getdistanceright(){
-  	digitalWrite(rightsonicip, LOW);  
+  	digitalWrite(rightsonicop, LOW);  
 	delayMicroseconds(2);  
-	digitalWrite(rightsonicip, HIGH);  
+	digitalWrite(rightsonicop, HIGH);  
 	delayMicroseconds(10);  
-	digitalWrite(rightsonicip, LOW);  
-  durationright = pulseIn(rightsonicop, HIGH);  
+	digitalWrite(rightsonicop, LOW);  
+  durationright = pulseIn(rightsonicip, HIGH);  
   return (durationright*.0343)/2;
 }
 
 float getdistancemid(){
-    	digitalWrite(midsonicip, LOW);    	
+    	digitalWrite(midsonicop, LOW);    	
 	delayMicroseconds(2);  
-	digitalWrite(midsonicip, HIGH);  
+	digitalWrite(midsonicop, HIGH);  
 	delayMicroseconds(10);  
-	digitalWrite(midsonicip, LOW);  
-  durationmid = pulseIn(midsonicop, HIGH);  
+	digitalWrite(midsonicop, LOW);  
+  durationmid = pulseIn(midsonicip, HIGH);  
   return (durationmid*.0343)/2;
 }
 
@@ -67,9 +70,9 @@ void moveforward(){
     	analogWrite(motorrightfor, 200);
     	analogWrite(motorrightback, 0);
 	if (direction == NORTH) {
-   		 y--;    // Move up
+   		 y++;    // Move up
  	 } else if (direction == SOUTH) {
-   		 y++;    // Move down
+   		 y--;    // Move down
 	 } else if (direction == EAST) {
   		  x++;    // Move right
  	 } else if (direction == WEST) {
@@ -84,9 +87,9 @@ void movebackward(){
     	analogWrite(motorrightfor, 0);  
     	analogWrite(motorrightback, 200);
 	if (direction == NORTH) {
-    		y++;    // Move down
+    		y--;    // Move down
   	} else if (direction == SOUTH) {
-    		y--;    // Move up
+    		y++;    // Move up
   	} else if (direction == EAST) {
     		x--;    // Move left
   	} else if (direction == WEST) {
@@ -115,16 +118,16 @@ void turnleft(){
 	delay(300);
 }
 
-bool frontpath(){
-	return distancemid > 15;
+bool isPathFront(){
+	return distancemid() > 15;
 }
 
-bool rightpath(){
-	return distanceright > 15;
+bool isPathRight(){
+	return distanceright() > 15;
 }
 
-bool leftpath(){
-	return distanceleft > 15;
+bool isPathLeft(){
+	return distanceleft() > 15;
 }
 
 void treamaux(){
@@ -135,23 +138,39 @@ void treamaux(){
   bool right = isPathRight();
 
   // Navigate based on available paths
-  if (front && marks[x][y+1] >= 2) {
-    moveForward();
-  } 
-  else if (left && marks[x-1][y] >= 2) {
-    turnLeft();
-    moveForward();
-  } 
-  else if (right && marks[x+1][y] >= 2) {
-    turnRight();
-    moveForward();
-  } 
-  else {
-    // Backtrack at dead end
-    moveBackward();
-    marks[x][y] = 2;   // Mark cell as twice visited
-  }
-  marks[x][y] = marks[x][y] + 1;
+  if (front && marks[x][y + 1] == 0) {
+    moveforward();
+} 
+else if (left && marks[x - 1][y] == 0) {
+    turnleft();
+    moveforward();
+} 
+else if (right && marks[x + 1][y] == 0) {
+    turnright();
+    moveforward();
+} 
+else {
+    // If no unvisited path → prefer cells marked 1
+    if (front && marks[x][y + 1] == 1) {
+        moveforward();
+    } 
+    else if (left && marks[x - 1][y] == 1) {
+        turnleft();
+        moveforward();
+    } 
+    else if (right && marks[x + 1][y] == 1) {
+        turnright();
+        moveforward();
+    } 
+    else {
+        // Dead end → Backtrack
+        movebackward();
+    }
+}
+
+// Increment marking
+marks[x][y]++;
+
 }
 
 void loop() {

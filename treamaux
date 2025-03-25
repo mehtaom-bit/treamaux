@@ -13,7 +13,7 @@
 #define SOUTH 2
 #define WEST  3
 
-int x = 0, y = 0;   // Robot position
+int x = 10, y = 0;   // Robot position
 int marks[20][20] = {0};  // Grid for visited cells
 
 int direction = NORTH;
@@ -69,15 +69,7 @@ void moveforward(){
 	analogWrite(motorleftback, 0);  
     	analogWrite(motorrightfor, 200);
     	analogWrite(motorrightback, 0);
-	if (direction == NORTH) {
-   		 y++;    // Move up
- 	 } else if (direction == SOUTH) {
-   		 y--;    // Move down
-	 } else if (direction == EAST) {
-  		  x++;    // Move right
- 	 } else if (direction == WEST) {
-		  x--;    // Move left
-   	 }
+	
 	delay(300);
 }
 
@@ -86,15 +78,7 @@ void movebackward(){
     	analogWrite(motorleftback, 200);
     	analogWrite(motorrightfor, 0);  
     	analogWrite(motorrightback, 200);
-	if (direction == NORTH) {
-    		y--;    // Move down
-  	} else if (direction == SOUTH) {
-    		y++;    // Move up
-  	} else if (direction == EAST) {
-    		x--;    // Move left
-  	} else if (direction == WEST) {
-    		x++;    // Move right
-  	}
+	
 	delay(300);
 }
 
@@ -155,10 +139,28 @@ else {
         moveforward();
     } 
     else if (left && marks[x - 1][y] == 1) {
+	if (direction == NORTH) {
+   		 y++;    // Move up
+ 	 } else if (direction == SOUTH) {
+   		 y--;    // Move down
+	 } else if (direction == EAST) {
+  		  x--;    // Move right
+ 	 } else if (direction == WEST) {
+		  x++;    // Move left
+   	 }
         turnleft();
         moveforward();
     } 
     else if (right && marks[x + 1][y] == 1) {
+	if (direction == NORTH) {
+   		 y++;    // Move up
+ 	 } else if (direction == SOUTH) {
+   		 y--;    // Move down
+	 } else if (direction == EAST) {
+  		  x++;    // Move right
+ 	 } else if (direction == WEST) {
+		  x--;    // Move left
+   	 }
         turnright();
         moveforward();
     } 

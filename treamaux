@@ -89,7 +89,7 @@ void turnright(){
 	analogWrite(motorrightback, 200);
 
 	direction = (direction + 1) % 4; 
-	delay(300);
+	delay(400);
 }
 
 void turnleft(){
@@ -99,19 +99,19 @@ void turnleft(){
 	analogWrite(motorrightback, 0);
 
 	direction = (direction + 3) % 4;
-	delay(300);
+	delay(400);
 }
 
 bool isPathFront(){
-	return distancemid() > 15;
+	return getdistancemid() > 15;
 }
 
 bool isPathRight(){
-	return distanceright() > 15;
+	return getdistanceright() > 15;
 }
 
 bool isPathLeft(){
-	return distanceleft() > 15;
+	return getdistanceleft() > 15;
 }
 
 void treamaux(){
@@ -171,12 +171,15 @@ else {
 }
 
 // Increment marking
-marks[x][y]++;
+if (front || left || right) {
+    marks[x][y]++;
+}
+
 
 }
 
 void loop() {
-  tremaux();
+  treamaux();
   delay(200);
 }
 

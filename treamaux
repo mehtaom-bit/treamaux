@@ -9,12 +9,12 @@
 #define motorleftfor
 #define motorleftback
 #define NORTH 0
-#define EAST  1
+#define EAST 1
 #define SOUTH 2
-#define WEST  3
+#define WEST 3
 
-int x = 10, y = 0;   // Robot position
-int marks[20][20] = {0};  // Grid for visited cells
+int x = 10, y = 0;          // Robot position
+int marks[20][20] = { 0 };  // Grid for visited cells
 
 int direction = NORTH;
 
@@ -31,90 +31,89 @@ void setup() {
   pinMode(motorrightback, OUTPUT);
   pinMode(motorleftfor, OUTPUT);
   pinMode(motorleftback, OUTPUT);
-
 }
 
-float getdistanceleft(){
-  	digitalWrite(leftsonicop, LOW);  
-	delayMicroseconds(2);  
-	digitalWrite(leftsonicop, HIGH);  
-	delayMicroseconds(10);  
-	digitalWrite(leftsonicop, LOW);  
-  durationleft = pulseIn(leftsonicip, HIGH);  
-  return (durationleft*.0343)/2;
+float getdistanceleft() {
+  digitalWrite(leftsonicop, LOW);
+  delayMicroseconds(2);
+  digitalWrite(leftsonicop, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(leftsonicop, LOW);
+  durationleft = pulseIn(leftsonicip, HIGH);
+  return (durationleft * .0343) / 2;
 }
 
-float getdistanceright(){
-  	digitalWrite(rightsonicop, LOW);  
-	delayMicroseconds(2);  
-	digitalWrite(rightsonicop, HIGH);  
-	delayMicroseconds(10);  
-	digitalWrite(rightsonicop, LOW);  
-  durationright = pulseIn(rightsonicip, HIGH);  
-  return (durationright*.0343)/2;
+float getdistanceright() {
+  digitalWrite(rightsonicop, LOW);
+  delayMicroseconds(2);
+  digitalWrite(rightsonicop, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(rightsonicop, LOW);
+  durationright = pulseIn(rightsonicip, HIGH);
+  return (durationright * .0343) / 2;
 }
 
-float getdistancemid(){
-    	digitalWrite(midsonicop, LOW);    	
-	delayMicroseconds(2);  
-	digitalWrite(midsonicop, HIGH);  
-	delayMicroseconds(10);  
-	digitalWrite(midsonicop, LOW);  
-  durationmid = pulseIn(midsonicip, HIGH);  
-  return (durationmid*.0343)/2;
+float getdistancemid() {
+  digitalWrite(midsonicop, LOW);
+  delayMicroseconds(2);
+  digitalWrite(midsonicop, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(midsonicop, LOW);
+  durationmid = pulseIn(midsonicip, HIGH);
+  return (durationmid * .0343) / 2;
 }
 
-void moveforward(){
-	analogWrite(motorleftfor, 200);
-	analogWrite(motorleftback, 0);  
-    	analogWrite(motorrightfor, 200);
-    	analogWrite(motorrightback, 0);
-	
-	delay(300);
+void moveforward() {
+  analogWrite(motorleftfor, 200);
+  analogWrite(motorleftback, 0);
+  analogWrite(motorrightfor, 200);
+  analogWrite(motorrightback, 0);
+
+  delay(300);
 }
 
-void movebackward(){
-	analogWrite(motorleftfor, 0);
-    	analogWrite(motorleftback, 200);
-    	analogWrite(motorrightfor, 0);  
-    	analogWrite(motorrightback, 200);
-	
-	delay(300);
+void movebackward() {
+  analogWrite(motorleftfor, 0);
+  analogWrite(motorleftback, 200);
+  analogWrite(motorrightfor, 0);
+  analogWrite(motorrightback, 200);
+
+  delay(300);
 }
 
-void turnright(){
-	analogWrite(motorleftfor, 200);
-	analogWrite(motorleftback, 0);
-	analogWrite(motorrightfor, 0);
-	analogWrite(motorrightback, 200);
+void turnright() {
+  analogWrite(motorleftfor, 200);
+  analogWrite(motorleftback, 0);
+  analogWrite(motorrightfor, 0);
+  analogWrite(motorrightback, 200);
 
-	direction = (direction + 1) % 4; 
-	delay(400);
+  direction = (direction + 1) % 4;
+  delay(400);
 }
 
-void turnleft(){
-	analogWrite(motorleftfor, 0);
-	analogWrite(motorleftback, 200);
-	analogWrite(motorrightfor, 200);
-	analogWrite(motorrightback, 0);
+void turnleft() {
+  analogWrite(motorleftfor, 0);
+  analogWrite(motorleftback, 200);
+  analogWrite(motorrightfor, 200);
+  analogWrite(motorrightback, 0);
 
-	direction = (direction + 3) % 4;
-	delay(400);
+  direction = (direction + 3) % 4;
+  delay(400);
 }
 
-bool isPathFront(){
-	return getdistancemid() > 15;
+bool isPathFront() {
+  return getdistancemid() > 15;
 }
 
-bool isPathRight(){
-	return getdistanceright() > 15;
+bool isPathRight() {
+  return getdistanceright() > 15;
 }
 
-bool isPathLeft(){
-	return getdistanceleft() > 15;
+bool isPathLeft() {
+  return getdistanceleft() > 15;
 }
 
-void treamaux(){
+void treamaux() {
 
   // Detect open paths
   bool front = isPathFront();
@@ -124,68 +123,65 @@ void treamaux(){
   // Navigate based on available paths
   if (front && marks[x][y + 1] == 0) {
     moveforward();
-} 
-else if (left && marks[x - 1][y] == 0) {
+  } else if (left && marks[x - 1][y] == 0) {
     turnleft();
     moveforward();
-} 
-else if (right && marks[x + 1][y] == 0) {
+  } else if (right && marks[x + 1][y] == 0) {
     turnright();
     moveforward();
-} 
-else {
+  } else if (getdistancemid() > 5) {
+    moveforward();
+    if (isPathRight) {
+      turnright();
+      moveforward();
+    } else if (isPathLeft) {
+      turnleft();
+      moveforward();
+    } else {
+      movebackward();
+    }
+  }
+  {
     // If no unvisited path → prefer cells marked 1
     if (front && marks[x][y + 1] == 1) {
-        moveforward();
-    } 
-    else if (left && marks[x - 1][y] == 1) {
-	if (direction == NORTH) {
-   		 y++;    // Move up
- 	 } else if (direction == SOUTH) {
-   		 y--;    // Move down
-	 } else if (direction == EAST) {
-  		  x--;    // Move right
- 	 } else if (direction == WEST) {
-		  x++;    // Move left
-   	 }
-        turnleft();
-        moveforward();
-    } 
-    else if (right && marks[x + 1][y] == 1) {
-	if (direction == NORTH) {
-   		 y++;    // Move up
- 	 } else if (direction == SOUTH) {
-   		 y--;    // Move down
-	 } else if (direction == EAST) {
-  		  x++;    // Move right
- 	 } else if (direction == WEST) {
-		  x--;    // Move left
-   	 }
-        turnright();
-        moveforward();
-    } 
-    else {
-        // Dead end → Backtrack
-        movebackward();
+      moveforward();
+    } else if (left && marks[x - 1][y] == 1) {
+      if (direction == NORTH) {
+        y++;  // Move up
+      } else if (direction == SOUTH) {
+        y--;  // Move down
+      } else if (direction == EAST) {
+        x--;  // Move right
+      } else if (direction == WEST) {
+        x++;  // Move left
+      }
+      turnleft();
+      moveforward();
+    } else if (right && marks[x + 1][y] == 1) {
+      if (direction == NORTH) {
+        y++;  // Move up
+      } else if (direction == SOUTH) {
+        y--;  // Move down
+      } else if (direction == EAST) {
+        x++;  // Move right
+      } else if (direction == WEST) {
+        x--;  // Move left
+      }
+      turnright();
+      moveforward();
+    } else {
+      // Dead end → Backtrack	
+      movebackward();
     }
-}
+  }
 
-// Increment marking
-if (front || left || right) {
+  // Increment marking
+  if (front || left || right) {
     marks[x][y]++;
-}
-
-
+  }
 }
 
 void loop() {
   treamaux();
   delay(200);
 }
-
-
-
-
-	 	
-  
-  
